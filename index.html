@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vue Form Validation</title>
+    <style>
+        label, .section {
+            border: 1px solid black;
+            padding: 1em;
+            display: block;
+            margin: 1em;
+        }
+        
+        .error {
+            margin-left: 1em;
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <h1>Vue Form Validation</h1>
+    <div id="app">
+        <div class="section">
+            <h2>Eingabeformular</h2>
+            <form>
+                <label>
+                    Name
+                    <input v-model="formular.name" type="text" placeholder="Wie heißen Sie?">
+                    <span v-if="isErrorName" class="error">Der Name darf nur maximal 10 Zeichen lang sein.</span>
+                </label>
+                <label>
+                    E-Mail
+                    <input v-model="formular.email" type="text" placeholder="Ihr E-MailAdresse?">
+                    <span v-if="isErrorEmail" class="error">Bitte korrekte E-Mail-Adresse eingeben.</span></label>
+                <label>
+                    Ich bin mit den AGBs einverstanden
+                    <input v-model="formular.agb" type="checkbox" >
+                    <span v-if="isErrorAGB" class="error">Bitte akzepieren Sie unsere AGBs.</span>
+                </label>
+
+                <button @click="onButtonAbsenden" :disabled="isErrorInForm">Absenden</button>
+                <p><span v-if="isErrorInForm" class="error">Leider sind Ihre Angaben noch unvollständig.</span></p>                
+            </form>
+        </div>        
+
+        <div class="section">
+            <h2>Daten</h2>
+            <ul>
+                <li v-for="listItem in list">{{ listItem }}</li>
+            </ul>
+        </div>
+    </div>
+    <script src="https://unpkg.com/vue@next"></script>
+    <script>
+        const App = {
+            data(){
+                return {
+                    formular: {
+                        name: '',
+                        email: '',
+                        agb: false
+                    },                    
+                    
+                    list: []
+                }
+            },
+
+            computed: {
+                isErrorName(){       
+                    const laenge = this.formular.name.length;             
+                    return laenge > 10;
+                },
+
+                isErrorEmail(){
+                    const regex = /\S+@\S+\.\S+/; // 'String @ String . String'
+                    return !regex.test(this.formular.email);
+                },
+
+                isErrorAGB(){
+                    return !this.formular.agb;
+                },
+
+                isErrorInForm(){
+                    return (this.isErrorName || this.isErrorEmail || this.isErrorAGB);
+                }
+            },
+
+            methods: {
+                onButtonAbsenden(event){
+                    // Nichts an Server schicken
+                    event.preventDefault();
+
+                    // Hier könnte auch noch eine Validierung stattfinden
+                   
+                    // Neues Objekt zusammenbauen
+                    const newItem = {
+                        email: this.formular.email,
+                        name: this.formular.name
+                    };
+
+                    // Neues Objekt speichern
+                    this.list.push(newItem);                                  
+                }                
+            }
+        };
+
+        Vue.createApp(App).mount('#app');
+    </script>
+</body>
+</html>
